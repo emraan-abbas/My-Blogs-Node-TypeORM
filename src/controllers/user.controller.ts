@@ -45,9 +45,9 @@ export const editUser = async (req: Request, res: Response) => {
     const user = await dbData.getRepository(Users).findOneBy({
         id : parseInt(req.params.id),
     })
-    dbData.getRepository(Users).merge(user, req.body)
-    const results = await dbData.getRepository(Users).save(user)
-    return res.status(200).json({message:'User Updated', results})
+    // dbData.getRepository(Users).merge(user, req.body)
+    // const results = await dbData.getRepository(Users).save(user)
+    // return res.status(200).json({message:'User Updated', results})
   }
   catch(error){
     return res.status(500).json({
