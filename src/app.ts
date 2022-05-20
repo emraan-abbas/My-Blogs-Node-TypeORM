@@ -1,19 +1,21 @@
 import "reflect-metadata"
 import express from 'express';
 import {indexRouter} from './routes/index';
-import {createConnection, DataSource} from 'typeorm';
+import {DataSource} from 'typeorm';
 import {Users} from './entities/user.model'
 import {Blogs} from './entities/blog.model';
-import {createUser} from './controllers/user.controller';
 
 const app = express();
+
+// Parsing
+app.use(express.json());
 
 export const dbData = new DataSource({
   type: 'postgres',
   database: 'blog_typeorm',
   username: 'postgres',
   password:'root',
-  logging: true,
+  // logging: true,
   synchronize: true,
   entities: [Users, Blogs]
 })
