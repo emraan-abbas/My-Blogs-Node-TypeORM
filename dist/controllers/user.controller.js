@@ -9,12 +9,44 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteUser = exports.editUser = exports.loginUser = exports.createUser = void 0;
+exports.deleteUser = exports.editUser = exports.getUser = exports.createUser = void 0;
+const user_model_1 = require("../entities/user.model");
+const typeorm_1 = require("typeorm");
 // Create User
 const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        //------------------------------------------------------------
+        (0, typeorm_1.createConnection)({
+            type: 'postgres',
+            username: 'postgres',
+            password: 'root',
+            logging: true,
+            synchronize: true,
+            entities: [user_model_1.Users],
+            database: 'blog_typeorm',
+        })
+            .then((connection) => __awaiter(void 0, void 0, void 0, function* () {
+            yield connection
+                .createQueryBuilder()
+                .insert()
+                .into(user_model_1.Users)
+                .values([
+                { name: 'req.body.name',
+                    email: 'req.body.email',
+                    password: 'req.body.password',
+                    role: 'req.body.role',
+                    status: 'req.body.status'
+                },
+            ])
+                .execute();
+            return res.status(200).json({
+                message: 'User Created',
+                Users: user_model_1.Users
+            });
+        })).catch(error => console.log(error));
     }
     catch (error) {
+        console.log(error);
         res.status(500).json({
             message: 'Error at CREATE USER',
             error
@@ -23,8 +55,28 @@ const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 });
 exports.createUser = createUser;
 // Get User
-const loginUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        // let allUser = await Users.findAll();
+        (0, typeorm_1.createConnection)({
+            type: 'postgres',
+            username: 'postgres',
+            password: 'root',
+            logging: true,
+            synchronize: true,
+            entities: [user_model_1.Users],
+            database: 'blog_typeorm',
+        })
+            .then((connection) => __awaiter(void 0, void 0, void 0, function* () {
+            const allUser = yield connection
+                .getRepository(user_model_1.Users)
+                .createQueryBuilder("Users")
+                .getMany();
+            return res.status(200).json({
+                message: 'List of all users :',
+                allUser
+            });
+        })).catch(error => console.log(error));
     }
     catch (error) {
         res.status(500).json({
@@ -33,10 +85,31 @@ const loginUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         });
     }
 });
-exports.loginUser = loginUser;
+exports.getUser = getUser;
 // Edit User
 const editUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        (0, typeorm_1.createConnection)({
+            type: 'postgres',
+            username: 'postgres',
+            password: 'root',
+            logging: true,
+            synchronize: true,
+            entities: [user_model_1.Users],
+            database: 'blog_typeorm',
+        })
+            .then((connection) => __awaiter(void 0, void 0, void 0, function* () {
+            const edited = yield connection
+                .createQueryBuilder()
+                .update(user_model_1.Users)
+                .set({ name: 'Brad Pitt', email: 'brad@gmail.com', password: '12345', role: 'Simple-User', status: 'Active' })
+                .where("id = :id", { id: 3 })
+                .execute();
+            return res.status(200).json({
+                message: 'User Updated :',
+                edited
+            });
+        })).catch(error => console.log(error));
     }
     catch (error) {
         res.status(500).json({
@@ -49,6 +122,26 @@ exports.editUser = editUser;
 // Delete User
 const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        (0, typeorm_1.createConnection)({
+            type: 'postgres',
+            username: 'postgres',
+            password: 'root',
+            logging: true,
+            synchronize: true,
+            entities: [user_model_1.Users],
+            database: 'blog_typeorm',
+        })
+            .then((connection) => __awaiter(void 0, void 0, void 0, function* () {
+            yield connection
+                .createQueryBuilder()
+                .delete()
+                .from(user_model_1.Users)
+                .where("id = :id", { id: 3 })
+                .execute();
+            return res.status(200).json({
+                message: 'User Deleted'
+            });
+        })).catch(error => console.log(error));
     }
     catch (error) {
         res.status(500).json({
