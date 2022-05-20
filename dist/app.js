@@ -11,12 +11,14 @@ const typeorm_1 = require("typeorm");
 const user_model_1 = require("./entities/user.model");
 const blog_model_1 = require("./entities/blog.model");
 const app = (0, express_1.default)();
+// Parsing
+app.use(express_1.default.json());
 exports.dbData = new typeorm_1.DataSource({
     type: 'postgres',
     database: 'blog_typeorm',
     username: 'postgres',
     password: 'root',
-    logging: true,
+    // logging: true,
     synchronize: true,
     entities: [user_model_1.Users, blog_model_1.Blogs]
 });
