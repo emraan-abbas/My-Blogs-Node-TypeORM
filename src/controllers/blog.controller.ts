@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { Blogs } from '../entities/blog.model';
 
 
 // Create Blogs
