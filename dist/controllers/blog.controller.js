@@ -10,9 +10,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteBlog = exports.editBlog = exports.getBlog = exports.createBlog = void 0;
+const blog_model_1 = require("../entities/blog.model");
+const app_1 = require("../app");
 // Create Blogs
 const createBlog = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const blog = app_1.dbData.getRepository(blog_model_1.Blogs).create(req.body);
+        const results = yield app_1.dbData.getRepository(blog_model_1.Blogs).save(blog);
+        return res.status(200).json({ message: 'Blog Created', results });
     }
     catch (error) {
         res.status(500).json({
@@ -25,6 +30,8 @@ exports.createBlog = createBlog;
 // Get BLOG
 const getBlog = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const blogs = yield app_1.dbData.getRepository(blog_model_1.Blogs).find();
+        return res.json(blogs);
     }
     catch (error) {
         res.status(500).json({
@@ -37,6 +44,12 @@ exports.getBlog = getBlog;
 // Edit BLOG
 const editBlog = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const blog = yield app_1.dbData.getRepository(blog_model_1.Blogs).findOneBy({
+            id: parseInt(req.params.id),
+        });
+        // dbData.getRepository(Blogs).merge(blog, req.body)
+        // const results = await dbData.getRepository(Blogs).save(blog)
+        // return res.status(200).json({message:'Blog Updated', results})
     }
     catch (error) {
         res.status(500).json({
@@ -49,6 +62,8 @@ exports.editBlog = editBlog;
 // Delete BLOG
 const deleteBlog = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const results = yield app_1.dbData.getRepository(blog_model_1.Blogs).delete(req.params.id);
+        return res.status(200).send({ message: 'Blog Deleted', results });
     }
     catch (error) {
         res.status(500).json({

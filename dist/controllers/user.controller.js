@@ -48,9 +48,9 @@ const editUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const user = yield app_1.dbData.getRepository(user_model_1.Users).findOneBy({
             id: parseInt(req.params.id),
         });
-        app_1.dbData.getRepository(user_model_1.Users).merge(user, req.body);
-        const results = yield app_1.dbData.getRepository(user_model_1.Users).save(user);
-        return res.status(200).json({ message: 'User Updated', results });
+        // dbData.getRepository(Users).merge(user, req.body)
+        // const results = await dbData.getRepository(Users).save(user)
+        // return res.status(200).json({message:'User Updated', results})
     }
     catch (error) {
         return res.status(500).json({
