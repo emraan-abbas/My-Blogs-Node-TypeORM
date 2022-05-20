@@ -1,47 +1,20 @@
 import { Request, Response } from 'express';
 import {Users} from '../entities/user.model';
-import {DataSource, createConnection, getConnection, getRepository, Connection} from "typeorm";
+import {dbData} from '../app';
+
 
 // Create User
 export const createUser = async (req: Request, res: Response) => {
   try{
-    //------------------------------------------------------------
-    createConnection({
-      type: 'postgres',
-      username: 'postgres',
-      password:'root',
-      logging: true,
-      synchronize: true,
-      entities: [Users],
-      database: 'blog_typeorm',
-    })
 
-  .then(async connection => {
-    await connection
-    .createQueryBuilder()
-    .insert()
-    .into(Users)
-    .values([
-        { name: 'req.body.name',
-          email: 'req.body.email',
-          password: 'req.body.password',
-          role: 'req.body.role',
-          status: 'req.body.status'
-        },
-    ])
-    .execute()
-
-    return res.status(200).json({
-      message: 'User Created',
-      Users
-      
-    })
-
-  }).catch(error => console.log(error));
+    const user = dbData.getRepository(Users).create(req.body);
+    const results = await dbData.getRepository(Users).save(user);
+    return res.status(200).json({message:'User Created', results});
+    
   }
   catch(error){
     console.log(error)
-    res.status(500).json({
+    return res.status(500).json({
       message:'Error at CREATE USER',
       error
     })
@@ -53,33 +26,12 @@ export const createUser = async (req: Request, res: Response) => {
 export const getUser = async (req: Request, res: Response) => {
 
   try{
-    // let allUser = await Users.findAll();
-    createConnection({
-      type: 'postgres',
-      username: 'postgres',
-      password:'root',
-      logging: true,
-      synchronize: true,
-      entities: [Users],
-      database: 'blog_typeorm',
-    })
-
-  .then(async connection => {
-      const allUser = await connection
-    .getRepository(Users)
-    .createQueryBuilder("Users")
-    .getMany();
-
-    return res.status(200).json({
-      message:'List of all users :',
-      allUser
-    })
-
-  }).catch(error => console.log(error));
+    const users = await dbData.getRepository(Users).find()
+    return res.json(users)
   }
 
   catch(error){
-    res.status(500).json({
+    return res.status(500).json({
       message:'Error at Get USER',
       error
     })
@@ -90,34 +42,15 @@ export const getUser = async (req: Request, res: Response) => {
 // Edit User
 export const editUser = async (req: Request, res: Response) => {
   try{
-    createConnection({
-      type: 'postgres',
-      username: 'postgres',
-      password:'root',
-      logging: true,
-      synchronize: true,
-      entities: [Users],
-      database: 'blog_typeorm',
+    const user = await dbData.getRepository(Users).findOneBy({
+        id : parseInt(req.params.id),
     })
-
-  .then(async connection => {
-      const edited = await connection
-    .createQueryBuilder()
-    .update(Users)
-    .set({ name:'Brad Pitt', email:'brad@gmail.com', password:'12345', role:'Simple-User', status:'Active' })
-    .where("id = :id", { id: 3 })
-    .execute()
-
-
-    return res.status(200).json({
-      message:'User Updated :',
-      edited
-    })
-
-  }).catch(error => console.log(error));
+    dbData.getRepository(Users).merge(user, req.body)
+    const results = await dbData.getRepository(Users).save(user)
+    return res.status(200).json({message:'User Updated', results})
   }
   catch(error){
-    res.status(500).json({
+    return res.status(500).json({
       message:'Error at Edit USER',
       error
     })
@@ -128,33 +61,11 @@ export const editUser = async (req: Request, res: Response) => {
 // Delete User
 export const deleteUser = async (req: Request, res: Response) => {
   try{
-    createConnection({
-      type: 'postgres',
-      username: 'postgres',
-      password:'root',
-      logging: true,
-      synchronize: true,
-      entities: [Users],
-      database: 'blog_typeorm',
-    })
-
-  .then(async connection => {
-      await connection
-    .createQueryBuilder()
-    .delete()
-    .from(Users)
-    .where("id = :id", { id: 3 })
-    .execute()
-
-
-    return res.status(200).json({
-      message:'User Deleted'
-    })
-
-  }).catch(error => console.log(error));
+    const results = await dbData.getRepository(Users).delete(req.params.id)
+    return res.status(200).send({message:'User Deleted', results})
   }
   catch(error){
-    res.status(500).json({
+    return res.status(500).json({
       message:'Error at DELETE USER',
       error
     })
