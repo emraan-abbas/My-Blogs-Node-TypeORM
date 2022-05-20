@@ -1,18 +1,29 @@
+import "reflect-metadata"
 import express from 'express';
 import {indexRouter} from './routes/index';
-import {createConnection} from "typeorm";
-import {User} from './entities/user.model'
+import {createConnection, DataSource} from 'typeorm';
+import {Users} from './entities/user.model'
+import {Blogs} from './entities/blog.model';
+import {createUser} from './controllers/user.controller';
 
 const app = express();
 
-createConnection({
+export const dbData = new DataSource({
   type: 'postgres',
   database: 'blog_typeorm',
   username: 'postgres',
   password:'root',
   logging: true,
   synchronize: true,
-  entities: [User],
+  entities: [Users, Blogs]
+})
+
+dbData.initialize()
+.then(() => {
+  console.log("Data Souce is Initialized")
+})
+.catch((err) => {
+  console.log("Error at Data Source Initialization", err)
 })
 
 
