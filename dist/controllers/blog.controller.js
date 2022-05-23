@@ -11,15 +11,26 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteBlog = exports.editBlog = exports.getBlog = exports.createBlog = void 0;
 const blog_model_1 = require("../entities/blog.model");
+const user_model_1 = require("../entities/user.model");
 const app_1 = require("../app");
 // Create Blogs
 const createBlog = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const blog = app_1.dbData.getRepository(blog_model_1.Blogs).create(req.body);
-        const results = yield app_1.dbData.getRepository(blog_model_1.Blogs).save(blog);
-        return res.status(200).json({ message: 'Blog Created', results });
+        const user = yield app_1.dbData.getRepository(user_model_1.Users).findOneBy({
+            id: req.body.users
+        });
+        if (user) {
+            const blog = app_1.dbData.getRepository(blog_model_1.Blogs).create({
+                title: req.body.title,
+                description: req.body.description,
+                users: user
+            });
+            const results = yield app_1.dbData.getRepository(blog_model_1.Blogs).save(blog);
+            return res.status(200).json({ message: 'Blog Created', results });
+        }
     }
     catch (error) {
+        console.log(error);
         res.status(500).json({
             message: 'Error at CREATE BLOG',
             error
@@ -30,7 +41,11 @@ exports.createBlog = createBlog;
 // Get BLOG
 const getBlog = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const blogs = yield app_1.dbData.getRepository(blog_model_1.Blogs).find();
+        const blogs = yield app_1.dbData.getRepository(blog_model_1.Blogs).find({
+            relations: {
+                users: true
+            }
+        });
         return res.json(blogs);
     }
     catch (error) {
