@@ -1,4 +1,5 @@
-import {Entity, Column, PrimaryGeneratedColumn} from "typeorm";
+import {Entity, Column, PrimaryGeneratedColumn, OneToMany} from "typeorm";
+import {Blogs} from './blog.model';
 
 @Entity()
 export class Users {
@@ -20,5 +21,8 @@ export class Users {
 
     @Column()
     status: String;
+
+    @OneToMany(() => Blogs, (blogs) => blogs.users)
+    blogs: Blogs
 
 }

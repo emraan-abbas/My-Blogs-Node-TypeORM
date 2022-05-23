@@ -120,7 +120,11 @@ exports.logIn = logIn;
 // Get User
 const getUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const users = yield app_1.dbData.getRepository(user_model_1.Users).find();
+        const users = yield app_1.dbData.getRepository(user_model_1.Users).find({
+            relations: {
+                blogs: true
+            }
+        });
         return res.json(users);
     }
     catch (error) {

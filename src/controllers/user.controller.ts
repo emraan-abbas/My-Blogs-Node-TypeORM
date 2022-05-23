@@ -92,7 +92,11 @@ export const logIn = async (req: Request, res: Response) => {
 export const getUser = async (req: Request, res: Response) => {
 
   try{
-    const users = await dbData.getRepository(Users).find()
+    const users = await dbData.getRepository(Users).find({
+      relations:{
+        blogs: true
+      }
+    })
     return res.json(users)
   }
 
