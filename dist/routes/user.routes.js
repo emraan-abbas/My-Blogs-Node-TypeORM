@@ -9,6 +9,7 @@ const user_controller_1 = require("../controllers/user.controller");
 const userRouter = (0, express_1.default)();
 exports.userRouter = userRouter;
 userRouter.post('/create', user_controller_1.createUser);
-userRouter.get('/login', user_controller_1.getUser);
+userRouter.get('/login', user_controller_1.logIn);
+userRouter.get('/all', user_controller_1.getUser);
 userRouter.put('/edit/:id', user_controller_1.editUser);
 userRouter.delete('/delete/:id', user_controller_1.deleteUser);
